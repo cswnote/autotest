@@ -10,9 +10,27 @@ import openpyxl
 
 if __name__ == '__main__':
     path = os.getcwd() + '/PL150_WS_eval/'
-    # path = 'C:\\Kmon20\\'
-    test_file = 'test.xlsx'
+    kmon_capture = True
     tek_serial_num = 'C040861'
+    filelist = os.listdir(path)
+    try:
+        filelist = [int(file.split('tek')[1].split('_kmonCap')[0]) for file in filelist if file[:3] == 'tek']
+        filelist = max(filelist)
+    except:
+        filelist = -1
+    start_file_num = filelist + 1
+    # path = 'C:\\Kmon20\\'
+    filelist = os.listdir(path)
+    try:
+        filelist = [int(file.split('info_test_')[1].split('.')[0]) for file in filelist if file[:10] == 'info_test_']
+        filelist = max(filelist)
+    except:
+        filelist = -1
+
+    test_file = 'test.xlsx'
+    info_file_num = filelist + 1
+    del filelist
+
     # tek_serial_num = input("type your scope's serial number: ")
     # file_num = 0
     # filename = 'tek_' + ('{0:05d}'.format(file_num))
@@ -28,7 +46,7 @@ if __name__ == '__main__':
     inner_loop = []
     inner_loop_count = 0
 
-    kmon = KMON.KMON(path)
+    kmon = KMON.KMON(start_file_num, info_file_num, path)
 
     # # initial scope
     kmon.set_default_scope(tek_serial_num)
@@ -40,7 +58,7 @@ if __name__ == '__main__':
 
     kmon.origin_coordinate()
     sw, pb, tx_packets = kmon.get_packet_info()
-    pag.PAUSE = 0.
+    pag.PAUSE = 0.1
 
     # a = {'filename': ['tek_0000', 'tek_0001', 'tek_0002', 'tek_0003', 'tek_0004'], 'RUN': [1, 1, 1, 1, 1],
     #  'Auto mode': [0, 0, 0, 0, 0], 'PID-EN': [1, 1, 1, 1, 1], 'V5-EN': [0, 0, 0, 0, 0], 'C12-EN': [0, 0, 0, 0, 0],
@@ -59,6 +77,6 @@ if __name__ == '__main__':
 
     test_seq = kmon.make_test_sequence(test_file, path)
     kmon.save_test_info_initial()
-    pag.PAUSE = 1
-    kmon.test_process(test_seq, True)
-    kmon.save_test_list(path)
+    pag.PAUSE = 0.1
+    kmon.test_process(test_seq, kmon_capture)
+    kmon.save_test_list(path, info_file_num)

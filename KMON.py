@@ -9,7 +9,7 @@ import sys
 import numpy as np
 
 class KMON():
-    def __init__(self, capture_path='d:/downloads'):
+    def __init__(self, start_file_num, info_file_num = 0, capture_path='d:/downloads/'):
         super().__init__()
 
         self.limit_x = 0
@@ -65,7 +65,7 @@ class KMON():
         self.csv_save_delay = 0
         self.previous_time = 0
 
-        self.file_num = 33
+        self.file_num = int(start_file_num)
         self.save_test_info = {'filename': []}
 
         # # ====================================================== # #
@@ -149,7 +149,7 @@ class KMON():
             self.waveform_format = 'csv'
 
     # 나중에 deco로 kmon capture 구현 하자
-    def save_scope_files(self, capture):
+    def save_scope_files(self, kmon_capture):
         filename = 'tek' + ('{0:04d}'.format(self.file_num))
         self.save_test_info['filename'].append(filename)
         print(filename)
@@ -178,8 +178,8 @@ class KMON():
             # else:
             self.save_test_info[name].append(self.packets[name])
 
-        if capture:
-            pag.screenshot(self.capture_path + filename + '.png', region=(self.capture_x1, self.capture_y1,
+        if kmon_capture:
+            pag.screenshot(self.capture_path + filename + '_kmonCap' + '.png', region=(self.capture_x1, self.capture_y1,
                                                                           self.capture_width, self.capture_height))
 
         time.sleep(self.csv_save_delay)
@@ -248,7 +248,7 @@ class KMON():
             self.save_test_info[key] = []
 
 
-    def save_test_list(self, path):
+    def save_test_list(self, path, info_file_num):
         wb = openpyxl.Workbook()
         ws = wb.active
 
@@ -260,8 +260,7 @@ class KMON():
         for i, key in enumerate(save_test_info_keys):
             for j, value in enumerate(self.save_test_info[save_test_info_keys[i]], start=2):
                 ws.cell(j, i + 1).value = value
-
-        wb.save(path + "info_test.xlsx")
+        wb.save(path + 'info_test_' + ('{0:02d}'.format(info_file_num)) + '.xlsx')
 
 
     def get_packet_info(self):
@@ -510,6 +509,10 @@ class KMON():
                     name = ws_test.cell(i, 3).value
                     value = ws_test.cell(i, 4).value
                     test_seq.append(['scope', name, value])
+                elif ws_test.cell(i, 2).value.lower() == 'pause':
+                    name = ws_test.cell(i, 3).value
+                    value = ws_test.cell(i, 4).value
+                    test_seq.append(['pause', name, value])
 
             elif ws_test.cell(i, 1).value.lower() == 'loop on':
                 if loop_count == 0:
@@ -537,6 +540,10 @@ class KMON():
                         name = ws_test.cell(i, 3).value
                         value = ws_test.cell(i, 4).value
                         loop_seq.append(['scope', name, value])
+                    elif ws_test.cell(i, 2).value.lower() == 'pause':
+                        name = ws_test.cell(i, 3).value
+                        value = ws_test.cell(i, 4).value
+                        loop_seq.append(['pause', name, value])
 
                 elif loop_count == 1:
                     loop_count += 1
@@ -563,6 +570,10 @@ class KMON():
                         name = ws_test.cell(i, 3).value
                         value = ws_test.cell(i, 4).value
                         loop_seq1.append(['scope', name, value])
+                    elif ws_test.cell(i, 2).value.lower() == 'pause':
+                        name = ws_test.cell(i, 3).value
+                        value = ws_test.cell(i, 4).value
+                        loop_seq1.append(['pause', name, value])
 
                 elif loop_count == 2:
                     loop_count += 1
@@ -589,6 +600,10 @@ class KMON():
                         name = ws_test.cell(i, 3).value
                         value = ws_test.cell(i, 4).value
                         loop_seq2.append(['scope', name, value])
+                    elif ws_test.cell(i, 2).value.lower() == 'pause':
+                        name = ws_test.cell(i, 3).value
+                        value = ws_test.cell(i, 4).value
+                        loop_seq2.append(['pause', name, value])
 
 
             elif ws_test.cell(i, 1).value.lower() == '-':
@@ -618,6 +633,10 @@ class KMON():
                             name = ws_test.cell(i, 3).value
                             value = ws_test.cell(i, 4).value
                             loop_seq.append(['scope', name, value])
+                        elif ws_test.cell(i, 2).value.lower() == 'pause':
+                            name = ws_test.cell(i, 3).value
+                            value = ws_test.cell(i, 4).value
+                            loop_seq.append(['pause', name, value])
                     if loop_count == 2:
                         if ws_test.cell(i, 2).value.lower() == 'sw':
                             name = ws_test.cell(i, 3).value
@@ -641,6 +660,10 @@ class KMON():
                             name = ws_test.cell(i, 3).value
                             value = ws_test.cell(i, 4).value
                             loop_seq1.append(['scope', name, value])
+                        elif ws_test.cell(i, 2).value.lower() == 'pause':
+                            name = ws_test.cell(i, 3).value
+                            value = ws_test.cell(i, 4).value
+                            loop_seq1.append(['pause', name, value])
                     if loop_count == 3:
                         if ws_test.cell(i, 2).value.lower() == 'sw':
                             name = ws_test.cell(i, 3).value
@@ -664,6 +687,10 @@ class KMON():
                             name = ws_test.cell(i, 3).value
                             value = ws_test.cell(i, 4).value
                             loop_seq2.append(['scope', name, value])
+                        elif ws_test.cell(i, 2).value.lower() == 'pause':
+                            name = ws_test.cell(i, 3).value
+                            value = ws_test.cell(i, 4).value
+                            loop_seq2.append(['pause', name, value])
 
 
             elif ws_test.cell(i, 1).value.lower() == 'loop off':
@@ -684,6 +711,10 @@ class KMON():
                         name = ws_test.cell(i, 3).value
                         value = ws_test.cell(i, 4).value
                         loop_seq.append(['scope', name, value])
+                    elif ws_test.cell(i, 2).value.lower() == 'pause':
+                        name = ws_test.cell(i, 3).value
+                        value = ws_test.cell(i, 4).value
+                        loop_seq.append(['pause', name, value])
                     test_seq.append(loop_seq)
                     loop_count -= 1
 
@@ -704,6 +735,10 @@ class KMON():
                         name = ws_test.cell(i, 3).value
                         value = ws_test.cell(i, 4).value
                         loop_seq1.append(['scope', name, value])
+                    elif ws_test.cell(i, 2).value.lower() == 'pause':
+                        name = ws_test.cell(i, 3).value
+                        value = ws_test.cell(i, 4).value
+                        loop_seq1.append(['pause', name, value])
                     loop_seq.append(loop_seq1)
                     loop_count -= 1
 
@@ -724,12 +759,16 @@ class KMON():
                         name = ws_test.cell(i, 3).value
                         value = ws_test.cell(i, 4).value
                         loop_seq2.append(['scope', name, value])
+                    elif ws_test.cell(i, 2).value.lower() == 'pause':
+                        name = ws_test.cell(i, 3).value
+                        value = ws_test.cell(i, 4).value
+                        loop_seq2.append(['pause', name, value])
                     loop_seq1.append(loop_seq2)
                     loop_count -= 1
         return test_seq
 
 
-    def loop_test(self, loop_seq, capture):
+    def loop_test(self, loop_seq, kmon_capture=False):
         # del loop_seq[0]
         # loop_count = 0
         pak_name = ''
@@ -741,10 +780,10 @@ class KMON():
             if seq[0] == 'pak_loop':
                 pak_name = seq[1]
                 iteration = np.arange(seq[2], seq[3], seq[4])
-        self.loop_process(pak_name, iteration, loop_seq, capture)
+        self.loop_process(pak_name, iteration, loop_seq, kmon_capture)
 
 
-    def loop_process(self, name, iteration, loop_seq, capture=False):
+    def loop_process(self, name, iteration, loop_seq, kmon_capture=False):
         for i in iteration:
             for idx, seq in enumerate(loop_seq):
                 if seq[0] == 'sw' or seq[0] == 'pb':
@@ -754,31 +793,34 @@ class KMON():
                 elif seq[0].split('_')[0] == 'pak':
                     self.change_packet_value(round(i, 8), name)
                 elif seq[0].split('_')[0] == 'loop':
-                    self.loop_test(seq)
+                    self.loop_test(seq, kmon_capture)
                 elif seq[0].lower() == 'scope':
                     if seq[1].lower() == 'on' or seq[1].lower() == 'run':
                         self.scope_on()
                     elif seq[1].lower() == 'off' or seq[1].lower() == 'stop':
                         self.scope_off()
                     elif seq[1].lower() == 'save':
-                        self.save_scope_files(capture)
+                        self.save_scope_files(kmon_capture)
+                elif seq[0] == 'pause':
+                    time.sleep(int(seq[2]))
 
-
-    def test_process(self, test_seq, capture=False):
+    def test_process(self, test_seq, kmon_capture=False):
         for idx, seq in enumerate(test_seq):
             if seq[0] == 'sw' or seq[0] == 'pb':
                 self.push_button(seq[2], seq[1], seq[0])
             elif seq[0] == 'pak':
                 self.change_packet_value(seq[2], seq[1])
             elif seq[0].split('_')[0] == 'loop':
-                self.loop_test(seq)
+                self.loop_test(seq, kmon_capture)
             elif seq[0] == 'scope':
                 if seq[1].lower() == 'on' or seq[1].lower() == 'run':
                     self.scope_on()
                 elif (seq[1].lower() == 'off' or seq[1].lower() == 'stop') and self.scope_mode == 'continuous':
                     self.scope_off()
                 elif seq[1].lower() == 'save':
-                    self.save_scope_files(capture)
+                    self.save_scope_files(kmon_capture)
+            elif seq[0] == 'pause':
+                time.sleep(int(seq[2]))
         print('=============================')
 
     # def save_file_info(self, sheet, file, path):
