@@ -9,7 +9,7 @@ import sys
 import numpy as np
 
 class KMON():
-    def __init__(self):
+    def __init__(self, capture_path='d:/downloads'):
         super().__init__()
 
         self.limit_x = 0
@@ -69,11 +69,13 @@ class KMON():
         self.save_test_info = {'filename': []}
 
         # # ====================================================== # #
-        self.capture_path
+        self.capture_path = capture_path
         self.capture_x1 = 1250
         self.capture_y1 = 72
         self.capture_x2 = 1500
         self.capture_y2 = 772
+        self.capture_width = self.capture_x2 - self.capture_x1
+        self.capture_height = self.capture_y2 - self.capture_y1
 
     def set_default_scope(self, serial_num):
         self.rm = pyvisa.ResourceManager()
@@ -177,8 +179,8 @@ class KMON():
             self.save_test_info[name].append(self.packets[name])
 
         if capture:
-            pag.screenshot(path + current_folder + filename + '.png', region=(capture_start_point_x, \
-                                                                              capture_start_point_y, width, height))
+            pag.screenshot(self.capture_path + filename + '.png', region=(self.capture_x1, self.capture_y1,
+                                                                          self.capture_width, self.capture_height))
 
         time.sleep(self.csv_save_delay)
 
@@ -727,7 +729,7 @@ class KMON():
         return test_seq
 
 
-    def loop_test(self, loop_seq):
+    def loop_test(self, loop_seq, capture):
         # del loop_seq[0]
         # loop_count = 0
         pak_name = ''
@@ -739,10 +741,10 @@ class KMON():
             if seq[0] == 'pak_loop':
                 pak_name = seq[1]
                 iteration = np.arange(seq[2], seq[3], seq[4])
-        self.loop_process(pak_name, iteration, loop_seq)
+        self.loop_process(pak_name, iteration, loop_seq, capture)
 
 
-    def loop_process(self, name, iteration, loop_seq):
+    def loop_process(self, name, iteration, loop_seq, capture=False):
         for i in iteration:
             for idx, seq in enumerate(loop_seq):
                 if seq[0] == 'sw' or seq[0] == 'pb':
@@ -759,10 +761,10 @@ class KMON():
                     elif seq[1].lower() == 'off' or seq[1].lower() == 'stop':
                         self.scope_off()
                     elif seq[1].lower() == 'save':
-                        self.save_scope_files()
+                        self.save_scope_files(capture)
 
 
-    def test_process(self, test_seq, capture='false'):
+    def test_process(self, test_seq, capture=False):
         for idx, seq in enumerate(test_seq):
             if seq[0] == 'sw' or seq[0] == 'pb':
                 self.push_button(seq[2], seq[1], seq[0])

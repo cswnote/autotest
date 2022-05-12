@@ -28,7 +28,7 @@ if __name__ == '__main__':
     inner_loop = []
     inner_loop_count = 0
 
-    kmon = KMON.KMON()
+    kmon = KMON.KMON(path)
 
     # # initial scope
     kmon.set_default_scope(tek_serial_num)
