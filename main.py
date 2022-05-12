@@ -9,10 +9,10 @@ import openpyxl
 
 
 if __name__ == '__main__':
-    path = os.getcwd() + '/'
+    path = os.getcwd() + '/PL150_WS_eval/'
     # path = 'C:\\Kmon20\\'
     test_file = 'test.xlsx'
-    tek_serial_num = 'C021083'
+    tek_serial_num = 'C040861'
     # tek_serial_num = input("type your scope's serial number: ")
     # file_num = 0
     # filename = 'tek_' + ('{0:05d}'.format(file_num))
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # kmon.scope_run_single_mode('continuous')
     kmon.scope_on()
     kmon.check_filesystem()
-    kmon.save_file_format(image_type='png', image_ink_save='on', savewave_type='csv')
+    kmon.save_file_format(image_type='png', ink_save='on', savewave_type='csv')
 
     kmon.origin_coordinate()
     sw, pb, tx_packets = kmon.get_packet_info()
@@ -60,5 +60,5 @@ if __name__ == '__main__':
     test_seq = kmon.make_test_sequence(test_file, path)
     kmon.save_test_info_initial()
     pag.PAUSE = 1
-    kmon.test_process(test_seq)
+    kmon.test_process(test_seq, True)
     kmon.save_test_list(path)

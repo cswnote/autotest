@@ -65,8 +65,15 @@ class KMON():
         self.csv_save_delay = 0
         self.previous_time = 0
 
-        self.file_num = 657
+        self.file_num = 33
         self.save_test_info = {'filename': []}
+
+        # # ====================================================== # #
+        self.capture_path
+        self.capture_x1 = 1250
+        self.capture_y1 = 72
+        self.capture_x2 = 1500
+        self.capture_y2 = 772
 
     def set_default_scope(self, serial_num):
         self.rm = pyvisa.ResourceManager()
@@ -139,8 +146,8 @@ class KMON():
         if self.waveform_format == 'SPREADSheet':
             self.waveform_format = 'csv'
 
-
-    def save_scope_files(self):
+    # 나중에 deco로 kmon capture 구현 하자
+    def save_scope_files(self, capture):
         filename = 'tek' + ('{0:04d}'.format(self.file_num))
         self.save_test_info['filename'].append(filename)
         print(filename)
@@ -168,6 +175,10 @@ class KMON():
             #     self.save_test_info[name].append('')
             # else:
             self.save_test_info[name].append(self.packets[name])
+
+        if capture:
+            pag.screenshot(path + current_folder + filename + '.png', region=(capture_start_point_x, \
+                                                                              capture_start_point_y, width, height))
 
         time.sleep(self.csv_save_delay)
 
@@ -751,7 +762,7 @@ class KMON():
                         self.save_scope_files()
 
 
-    def test_process(self, test_seq):
+    def test_process(self, test_seq, capture='false'):
         for idx, seq in enumerate(test_seq):
             if seq[0] == 'sw' or seq[0] == 'pb':
                 self.push_button(seq[2], seq[1], seq[0])
@@ -765,7 +776,7 @@ class KMON():
                 elif (seq[1].lower() == 'off' or seq[1].lower() == 'stop') and self.scope_mode == 'continuous':
                     self.scope_off()
                 elif seq[1].lower() == 'save':
-                    self.save_scope_files()
+                    self.save_scope_files(capture)
         print('=============================')
 
     # def save_file_info(self, sheet, file, path):
