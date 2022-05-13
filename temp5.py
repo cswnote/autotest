@@ -6,10 +6,14 @@ from datetime import datetime
 import keyboard
 
 path = os.getcwd() #+ '\\PL150_WS_eval\\'
-path = path[:-13]
 filelist = os.listdir(path)
+a=[]
+for file in filelist:
+    if file[:3] == 'tek':
+        a.append(file.split('tek')[1][:4])
 
-filelist = [file.split('.')[0] for file in filelist if file[:3] == 'tek']
+
+filelist = [int(file.split('tek')[1].split('_kmonCap')[0]) for file in filelist if file[:3] == 'tek']
 
 for file in filelist:
     src = os.path.join(path, file + '.png')

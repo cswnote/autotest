@@ -822,6 +822,3 @@ class KMON():
             elif seq[0] == 'pause':
                 time.sleep(int(seq[2]))
         print('=============================')
-
-    # def save_file_info(self, sheet, file, path):
-    #     openpyxl

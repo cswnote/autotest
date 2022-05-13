@@ -14,7 +14,7 @@ if __name__ == '__main__':
     tek_serial_num = 'C040861'
     filelist = os.listdir(path)
     try:
-        filelist = [int(file.split('tek')[1].split('_kmonCap')[0]) for file in filelist if file[:3] == 'tek']
+        filelist = [int(file.split('tek')[1][:4]) for file in filelist if file[:3] == 'tek']
         filelist = max(filelist)
     except:
         filelist = -1
