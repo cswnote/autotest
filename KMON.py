@@ -461,12 +461,10 @@ class KMON():
                 # if self.pb[name] != int(set_value[i]):
                     # self.push_button(int(set_value[i]), name, 'pb')
 
-        print('==============')
-
 
     def make_test_sequence(self, file, path):
         wb_test = openpyxl.load_workbook(path + file)
-        ws_test = wb_test['test']
+        ws_test = wb_test['test_300']
 
         b_length = 0
         c_length = 0

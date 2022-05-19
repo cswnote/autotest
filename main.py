@@ -11,6 +11,7 @@ import openpyxl
 if __name__ == '__main__':
     path = os.getcwd() + '/PL150_WS_eval/'
     kmon_capture = True
+    # kmon_capture = False
     tek_serial_num = 'C040861'
     filelist = os.listdir(path)
     try:
