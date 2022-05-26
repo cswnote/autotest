@@ -9,7 +9,7 @@ import openpyxl
 
 
 if __name__ == '__main__':
-    path = os.getcwd() + '/PL150_WS_eval/'
+    path = os.getcwd() #+ '/PL150_WS_eval/'
     kmon_capture = True
     # kmon_capture = False
     tek_serial_num = 'C040861'
@@ -29,6 +29,7 @@ if __name__ == '__main__':
         filelist = -1
 
     test_file = 'test.xlsx'
+    test_sheet = 'test'
     info_file_num = filelist + 1
     del filelist
 
@@ -76,7 +77,8 @@ if __name__ == '__main__':
     #  '14.RF Freq3(kHz)': ['20000', '20000', '20000', '20000', '20000'],
     #  '15.Output': ['65535', '65535', '65535', '65535', '65535']}
 
-    test_seq = kmon.make_test_sequence(test_file, path)
+
+    test_seq = kmon.make_test_sequence(test_file, path, sheet=test_sheet)
     kmon.save_test_info_initial()
     pag.PAUSE = 0.1
     kmon.test_process(test_seq, kmon_capture)

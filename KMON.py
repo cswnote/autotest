@@ -462,7 +462,7 @@ class KMON():
                     # self.push_button(int(set_value[i]), name, 'pb')
 
 
-    def make_test_sequence(self, file, path):
+    def make_test_sequence(self, file, path, sheet='test'):
         wb_test = openpyxl.load_workbook(path + file)
         ws_test = wb_test['manual mode']
 
