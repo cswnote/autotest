@@ -9,7 +9,7 @@ import openpyxl
 
 
 if __name__ == '__main__':
-    path = os.getcwd() #+ '/PL150_WS_eval/'
+    path = os.getcwd() + '/PL150_WS_eval/'
     kmon_capture = True
     # kmon_capture = False
     tek_serial_num = 'C040861'
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         filelist = -1
 
     test_file = 'test.xlsx'
-    test_sheet = 'test'
+    test_sheet = 'manual mode'
     info_file_num = filelist + 1
     del filelist
 

@@ -464,7 +464,7 @@ class KMON():
 
     def make_test_sequence(self, file, path, sheet='test'):
         wb_test = openpyxl.load_workbook(path + file)
-        ws_test = wb_test['manual mode']
+        ws_test = wb_test[sheet]
 
         b_length = 0
         c_length = 0
