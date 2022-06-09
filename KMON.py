@@ -77,6 +77,18 @@ class KMON():
         self.capture_width = self.capture_x2 - self.capture_x1
         self.capture_height = self.capture_y2 - self.capture_y1
 
+        # # ====================================================== # #
+        self.scope_y_scale_ch1 = False
+        self.scope_y_scale_ch2 = False
+        self.scope_y_scale_ch3 = False
+        self.scope_y_scale_ch4 = False
+        self.ch1_dependency = ''
+        self.ch2_dependency = ''
+        self.ch3_dependency = ''
+        self.ch4_dependency = ''
+        self.resistor = 1
+
+
     def set_default_scope(self, serial_num):
         self.rm = pyvisa.ResourceManager()
         instrument_list = self.rm.list_resources()
@@ -150,6 +162,33 @@ class KMON():
 
     # 나중에 deco로 kmon capture 구현 하자
     def save_scope_files(self, kmon_capture):
+        # # change scope y scale
+        if self.scope_y_scale_ch4:
+            key = self.ch4_dependency
+            var = self.packaets[self.ch4_dependency][-1]
+            div = var * self.resistor * 10**3 * 1.25 / 4
+            ch = 'ch4'
+        elif self.scope_y_scale_ch3:
+            key = self.ch3_dependency
+            var = self.packaets[self.ch3_dependency][-1]
+            div = var * self.resistor * 10 ** 3 * 1.25 / 4
+            ch = 'ch3'
+        elif self.scope_y_scale_ch2:
+            key = self.ch2_dependency
+            var = self.packaets[self.ch2_dependency][-1]
+            div = var * self.resistor * 10 ** 3 * 1.25 / 4
+            ch = 'ch2'
+            # when you need some task, add it
+        elif self.scope_y_scale_ch1:
+            key = self.ch1_dependency
+            var = self.packaets[self.ch1_dependency][-1]
+            div = var * self.resistor * 10**3 * 1.25 / 4
+            ch = 'ch1'
+            # when you need some task, add it
+
+        self.scope.write(ch + ':scale ' + str(div))
+
+        # # save scope file
         filename = 'tek' + ('{0:04d}'.format(self.file_num))
         self.save_test_info['filename'].append(filename)
         print(filename)
@@ -159,23 +198,14 @@ class KMON():
 
         names = list(self.sw.keys())
         for name in names:
-        #     if len(self.sw[name]) == 0 and type(self.sw[name]) != "<class 'int'>":
             self.save_test_info[name].append(self.sw[name])
-        #     else:
-        #         self.save_test_info[name].append(self.sw[name])
 
         names = list(self.pb.keys())
         for name in names:
-            # if len(self.pb[name]) == 0:
             self.save_test_info[name].append(self.pb[name])
-            # else:
-            #     self.save_test_info[name].append(self.pb[name])
 
         names = list(self.packets.keys())
         for name in names:
-            # if len(self.packets[name]) == 0:
-            #     self.save_test_info[name].append('')
-            # else:
             self.save_test_info[name].append(self.packets[name])
 
         if kmon_capture:
@@ -511,6 +541,36 @@ class KMON():
                     name = ws_test.cell(i, 3).value
                     value = ws_test.cell(i, 4).value
                     test_seq.append(['pause', name, value])
+                elif ws_test.cell(i, 2).value.lower() == 'var':
+                    try:
+                        if 'ch1' in ws_test.cell(1, 3).value.lower().replace(' ', ''):
+                            self.scope_y_scale_ch1 = True
+                            self.ch1_dependency = ws_test.cell(1, 4).value
+                            test_length -= 1
+                        elif 'ch2' in ws_test.cell(1, 3).value.lower().replace(' ', ''):
+                            self.scope_y_scale_ch2 = True
+                            self.ch2_dependency = ws_test.cell(1, 4).value
+                            test_length -= 1
+                        elif 'ch3' in ws_test.cell(1, 3).value.lower().replace(' ', ''):
+                            self.scope_y_scale_ch3 = True
+                            self.ch3_dependency = ws_test.cell(1, 4).value
+                            test_length -= 1
+                        elif 'ch4' in ws_test.cell(1, 3).value.lower().replace(' ', ''):
+                            self.scope_y_scale_ch4 = True
+                            self.ch4_dependency = ws_test.cell(1, 4).value
+                            test_length -= 1
+                    except:
+                        print('scope channel setting problem in set file')
+                        sys.exit()
+                elif ws_test.cell(i, 2).value.lower() == 'resistor':
+                    if ws_test.cell(i, 3).value is not None:
+                        try:
+                            self.resistor = float(ws_test.cell(i, 3).value) * 10**3
+                            test_length -= 1
+                        except:
+                            print('resistor value maybe is not number. check it')
+                            sys.exit()
+
 
             elif ws_test.cell(i, 1).value.lower() == 'loop on':
                 if loop_count == 0:
