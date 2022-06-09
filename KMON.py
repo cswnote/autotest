@@ -82,10 +82,14 @@ class KMON():
         self.scope_y_scale_ch2 = False
         self.scope_y_scale_ch3 = False
         self.scope_y_scale_ch4 = False
-        self.ch1_dependency = ''
-        self.ch2_dependency = ''
-        self.ch3_dependency = ''
-        self.ch4_dependency = ''
+        self.scale_ch1 = 1
+        self.scale_ch2 = 1
+        self.scale_ch3 = 1
+        self.scale_ch4 = 1
+        self.dependency_ch1 = ''
+        self.dependency_ch2 = ''
+        self.dependency_ch3 = ''
+        self.dependency_ch4 = ''
         self.resistor = 1
 
 
@@ -162,31 +166,6 @@ class KMON():
 
     # 나중에 deco로 kmon capture 구현 하자
     def save_scope_files(self, kmon_capture):
-        # # change scope y scale
-        if self.scope_y_scale_ch4:
-            key = self.ch4_dependency
-            var = self.packaets[self.ch4_dependency][-1]
-            div = var * self.resistor * 10**3 * 1.25 / 4
-            ch = 'ch4'
-        elif self.scope_y_scale_ch3:
-            key = self.ch3_dependency
-            var = self.packaets[self.ch3_dependency][-1]
-            div = var * self.resistor * 10 ** 3 * 1.25 / 4
-            ch = 'ch3'
-        elif self.scope_y_scale_ch2:
-            key = self.ch2_dependency
-            var = self.packaets[self.ch2_dependency][-1]
-            div = var * self.resistor * 10 ** 3 * 1.25 / 4
-            ch = 'ch2'
-            # when you need some task, add it
-        elif self.scope_y_scale_ch1:
-            key = self.ch1_dependency
-            var = self.packaets[self.ch1_dependency][-1]
-            div = var * self.resistor * 10**3 * 1.25 / 4
-            ch = 'ch1'
-            # when you need some task, add it
-
-        self.scope.write(ch + ':scale ' + str(div))
 
         # # save scope file
         filename = 'tek' + ('{0:04d}'.format(self.file_num))
@@ -249,15 +228,50 @@ class KMON():
 
 
     def scope_on(self):
+        # # change scope y scale
+        # # 범용으로 하려면 반드시 수정
+        ratio = 2.5
+        if self.scope_y_scale_ch4:
+            key = self.dependency_ch4
+            V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
+            I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
+            if V >= I * self.resistor:
+                div = I * self.resistor * ratio / 4
+            else:
+                div = V * ratio / 4
+            self.scope.write('ch4:scale ' + str(div))
+        if self.scope_y_scale_ch3:
+            key = self.dependency_ch3
+            V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
+            I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
+            if I >= V / self.resistor:
+                div = V / self.resistor * ratio / 4
+            else:
+                div = I * ratio / 4
+            self.scope.write('ch3:scale ' + str(div))
+        if self.scope_y_scale_ch2:
+            key = self.dependency_ch2
+            var = float(self.packets[self.dependency_ch2]) * self.scale_ch2
+            div = var * ratio / 4
+            self.scope.write('ch2:scale ' + str(div))
+            # when you need some task, add it
+        if self.scope_y_scale_ch1:
+            key = self.dependency_ch1
+            var = float(self.packets[self.dependency_ch1]) * self.scale_ch1
+            div = var * ratio / 4
+            self.scope.write('ch1:scale ' + str(div))
+            # when you need some task, add it
+
         self.scope.write('ACQuire:STATE ON')
+
         if self.scope_mode == 'single':
-            time.sleep(2)
+            time.sleep(2.5)
 
 
     def scope_off(self):
         if self.scope_mode == 'continuous':
             self.scope.write('ACQuire:STATE OFF')
-            time.sleep(2)
+            time.sleep(2.5)
 
 
     def save_test_info_initial(self):
@@ -543,33 +557,51 @@ class KMON():
                     test_seq.append(['pause', name, value])
                 elif ws_test.cell(i, 2).value.lower() == 'var':
                     try:
-                        if 'ch1' in ws_test.cell(1, 3).value.lower().replace(' ', ''):
-                            self.scope_y_scale_ch1 = True
-                            self.ch1_dependency = ws_test.cell(1, 4).value
-                            test_length -= 1
-                        elif 'ch2' in ws_test.cell(1, 3).value.lower().replace(' ', ''):
-                            self.scope_y_scale_ch2 = True
-                            self.ch2_dependency = ws_test.cell(1, 4).value
-                            test_length -= 1
-                        elif 'ch3' in ws_test.cell(1, 3).value.lower().replace(' ', ''):
-                            self.scope_y_scale_ch3 = True
-                            self.ch3_dependency = ws_test.cell(1, 4).value
-                            test_length -= 1
-                        elif 'ch4' in ws_test.cell(1, 3).value.lower().replace(' ', ''):
-                            self.scope_y_scale_ch4 = True
-                            self.ch4_dependency = ws_test.cell(1, 4).value
-                            test_length -= 1
+                        if 'ch1' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                            if 'scope' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                                self.scope_y_scale_ch1 = True
+                                self.dependency_ch1 = ws_test.cell(i, 4).value
+                                test_length -= 1
+                            elif 'scale' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                                self.scale_ch1 = float(ws_test.cell(i, 4).value)
+                                test_length -= 1
+                        elif 'ch2' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                            if 'scope' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                                self.scope_y_scale_ch2 = True
+                                self.dependency_ch2 = ws_test.cell(i, 4).value
+                                test_length -= 1
+                            elif 'scale' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                                self.scale_ch2 = float(ws_test.cell(i, 4).value)
+                                test_length -= 1
+                        elif 'ch3' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                            if 'scope' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                                self.scope_y_scale_ch3 = True
+                                self.dependency_ch3 = ws_test.cell(i, 4).value
+                                test_length -= 1
+                            elif 'scale' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                                self.scale_ch3 = float(ws_test.cell(i, 4).value)
+                                test_length -= 1
+                        elif 'ch4' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                            if 'scope' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                                self.scope_y_scale_ch4 = True
+                                self.dependency_ch4 = ws_test.cell(i, 4).value
+                                test_length -= 1
+                            elif 'scale' in ws_test.cell(i, 3).value.lower().replace(' ', ''):
+                                self.scale_ch4 = float(ws_test.cell(i, 4).value)
+                                test_length -= 1
                     except:
                         print('scope channel setting problem in set file')
                         sys.exit()
                 elif ws_test.cell(i, 2).value.lower() == 'resistor':
-                    if ws_test.cell(i, 3).value is not None:
+                    if ws_test.cell(i, 4).value is not None:
                         try:
-                            self.resistor = float(ws_test.cell(i, 3).value) * 10**3
+                            self.resistor = float(ws_test.cell(i, 4).value) * 10 ** 3
                             test_length -= 1
                         except:
                             print('resistor value maybe is not number. check it')
                             sys.exit()
+
+
 
 
             elif ws_test.cell(i, 1).value.lower() == 'loop on':
