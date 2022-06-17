@@ -231,7 +231,7 @@ class KMON():
     def scope_on(self):
         # # change scope y scale
         # # 범용으로 하려면 반드시 수정
-        ratio = 3
+        ratio = 2.5
         if self.scope_y_scale_ch4:
             V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
             I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
@@ -250,7 +250,7 @@ class KMON():
             I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
             if I >= V / self.resistor:
                 if V / self.resistor != 0:
-                    weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.00035))))
+                    weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.00035)))) # amp01 500ohm
                     div = V / self.resistor * ratio / 4 * weight
                 else:
                     div = V / self.resistor * ratio / 4
