@@ -29,7 +29,7 @@ if __name__ == '__main__':
         filelist = -1
 
     test_file = 'test.xlsx'
-    test_sheet = 'manual mode'
+    test_sheet = 'test_300_ch2_V'
     info_file_num = filelist + 1
     del filelist
 
