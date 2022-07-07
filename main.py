@@ -20,7 +20,6 @@ if __name__ == '__main__':
     except:
         filelist = -1
     start_file_num = filelist + 1
-    # path = 'C:\\Kmon20\\'
     filelist = os.listdir(path)
     try:
         filelist = [int(file.split('info_test_')[1].split('.')[0]) for file in filelist if file[:10] == 'info_test_']
@@ -62,22 +61,6 @@ if __name__ == '__main__':
     sw, pb, tx_packets = kmon.get_packet_info()
     pag.PAUSE = 0.1
 
-    # a = {'filename': ['tek_0000', 'tek_0001', 'tek_0002', 'tek_0003', 'tek_0004'], 'RUN': [1, 1, 1, 1, 1],
-    #  'Auto mode': [0, 0, 0, 0, 0], 'PID-EN': [1, 1, 1, 1, 1], 'V5-EN': [0, 0, 0, 0, 0], 'C12-EN': [0, 0, 0, 0, 0],
-    #  'CP-EN': [1, 1, 1, 1, 1], 'RF1-EN': [0, 0, 0, 0, 0], 'RF2-EN': [0, 0, 0, 0, 0], 'SET PID V': [1, 1, 1, 1, 1],
-    #  'SET PID C': [1, 1, 1, 1, 1], 'SEL Freq1': [0, 0, 0, 0, 0], 'SEL Freq2': [0, 0, 0, 0, 0],
-    #  'SEL Freq3': [0, 0, 0, 0, 0], 'b5': [0, 0, 0, 0, 0], 'b6': [0, 0, 0, 0, 0], 'b7': [0, 0, 0, 0, 0],
-    #  '0.Tag Num': ['1', '1', '1', '1', '1'], '1.Switch': [37, 37, 37, 37, 37], '2.Push Button': [3, 3, 3, 3, 3],
-    #  '3.CP PWM <= 320': ['10', '10', '10', '10', '10'], '4.CP Volt(V)': ['100', '100', '100', '100', '100'],
-    #  '5.PID KP V': ['0.5', '0.5', '0.5', '0.5', '0.5'], '6.PID KI V': ['0.1', '0.1', '0.1', '0.1', '0.1'],
-    #  '7.PID KD V': ['0.1', '0.1', '0.1', '0.1', '0.1'], '8.CP Curr(A)': ['0.4', '0.4', '0.4', '0.4', '0.4'],
-    #  '9.PID KP C': ['1.5', '1.5', '1.5', '1.5', '1.5'], '10.PID KI C': ['0.3', '0.3', '0.3', '0.3', '0.3'],
-    #  '11.PID KD C': ['0.2', '0.2', '0.2', '0.2', '0.2'], '12.RF Freq1(kHz)': ['1000', '1000', '1000', '1000', '1000'],
-    #  '13.RF Freq2(kHz)': ['3000', '3000', '3000', '3000', '3000'],
-    #  '14.RF Freq3(kHz)': ['20000', '20000', '20000', '20000', '20000'],
-    #  '15.Output': ['65535', '65535', '65535', '65535', '65535']}
-
-
     test_seq = kmon.make_test_sequence(test_file, path, sheet=test_sheet)
     kmon.save_test_info_initial()
     pag.PAUSE = 0.1
@@ -86,4 +69,8 @@ if __name__ == '__main__':
     kmon.test_process(test_seq, kmon_capture)
     pag.moveTo(257, 169)
     pag.click(button='right')
+
     kmon.save_test_list(path, info_file_num)
+    path = path + 'kmon csv/'
+    kmon.save_kmon_csv(path, info_file_num)
+
