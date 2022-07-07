@@ -169,7 +169,7 @@ class KMON():
     def save_scope_files(self, kmon_capture):
 
         # # save scope file
-        filename = 'tek' + ('{0:04d}'.format(self.file_num))
+        filename = 'tek' + ('{0:05d}'.format(self.file_num))
         self.save_test_info['filename'].append(filename)
         print(filename)
         self.scope.write("SAVe:IMAGe '" + filename + '.' + self.image_format + "'")
@@ -268,6 +268,8 @@ class KMON():
             div = var * ratio / 4
             self.scope.write('ch1:scale ' + str(div))
             # when you need some task, add it
+
+        
 
         self.scope.write('ACQuire:STATE ON')
 
