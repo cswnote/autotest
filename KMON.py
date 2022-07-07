@@ -231,43 +231,64 @@ class KMON():
     def scope_on(self):
         # # change scope y scale
         # # 범용으로 하려면 반드시 수정
-        ratio = 2.5
-        if self.scope_y_scale_ch4:
-            V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
-            I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
 
-            if V >= I * self.resistor:
-                if I * self.resistor != 0:
-                    weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.23))))
-                    div = I * self.resistor * ratio / 4 * weight
-                else:
-                    div = I * self.resistor * ratio / 4
-            else:
-                div = V * ratio / 4
-            self.scope.write('ch4:scale ' + str(div))
-        if self.scope_y_scale_ch3:
+        if 'pwm ' in self.dependency_ch1.lower() or 'pwm ' in self.dependency_ch2.lower() or 'pwm ' in self.dependency_ch3.lower() or 'pwm ' in self.dependency_ch4.lower():
+            ratio = 1.4
+
             V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
-            I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
-            if I >= V / self.resistor:
-                if V / self.resistor != 0:
-                    weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.00035)))) # amp01 500ohm
-                    div = V / self.resistor * ratio / 4 * weight
+            I = V / self.resistor
+
+            try:
+                weight = 1 / (1 - (1 / (float(self.packets[self.dependency_ch4]) * 0.08 * math.exp(I * self.resistor * 0.3))))
+                Vdiv = V * ratio / 4 * weight
+                Idiv = I * ratio / 4 * weight
+            except:
+                Vdiv = V * ratio / 4
+                Idiv = I * ratio / 4
+
+            if self.scope_y_scale_ch4:
+                self.scope.write('ch4:scale ' + str(Vdiv))
+            if self.scope_y_scale_ch3:
+                self.scope.write('ch3:scale ' + str(Idiv))
+
+        else:
+            ratio = 2.5
+            if self.scope_y_scale_ch4:
+                V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
+                I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
+
+                if V >= I * self.resistor:
+                    if I * self.resistor != 0:
+                        weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.23))))
+                        div = I * self.resistor * ratio / 4 * weight
+                    else:
+                        div = I * self.resistor * ratio / 4
                 else:
+                    div = V * ratio / 4
+                self.scope.write('ch4:scale ' + str(div))
+            if self.scope_y_scale_ch3:
+                V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
+                I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
+                if I >= V / self.resistor:
+                    if V / self.resistor != 0:
+                        weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.00035)))) # amp01 500ohm
+                        div = V / self.resistor * ratio / 4 * weight
+                    else:
+                        div = V / self.resistor * ratio / 4
                     div = V / self.resistor * ratio / 4
-                div = V / self.resistor * ratio / 4
-            else:
-                div = I * ratio / 4
-            self.scope.write('ch3:scale ' + str(div))
-        if self.scope_y_scale_ch2:
-            var = float(self.packets[self.dependency_ch2]) * self.scale_ch2
-            div = var * ratio / 4
-            self.scope.write('ch2:scale ' + str(div))
-            # when you need some task, add it
-        if self.scope_y_scale_ch1:
-            var = float(self.packets[self.dependency_ch1]) * self.scale_ch1
-            div = var * ratio / 4
-            self.scope.write('ch1:scale ' + str(div))
-            # when you need some task, add it
+                else:
+                    div = I * ratio / 4
+                self.scope.write('ch3:scale ' + str(div))
+            if self.scope_y_scale_ch2:
+                var = float(self.packets[self.dependency_ch2]) * self.scale_ch2
+                div = var * ratio / 4
+                self.scope.write('ch2:scale ' + str(div))
+                # when you need some task, add it
+            if self.scope_y_scale_ch1:
+                var = float(self.packets[self.dependency_ch1]) * self.scale_ch1
+                div = var * ratio / 4
+                self.scope.write('ch1:scale ' + str(div))
+                # when you need some task, add it
 
         
 
