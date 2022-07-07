@@ -15,7 +15,7 @@ if __name__ == '__main__':
     tek_serial_num = 'C040861'
     filelist = os.listdir(path)
     try:
-        filelist = [int(file.split('tek')[1][:4]) for file in filelist if file[:3] == 'tek']
+        filelist = [int(file.split('tek')[1][:5]) for file in filelist if file[:3] == 'tek']
         filelist = max(filelist)
     except:
         filelist = -1
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         filelist = -1
 
     test_file = 'test.xlsx'
-    test_sheet = 'manual mode'
+    test_sheet = 'manual mode ch4'
     info_file_num = filelist + 1
     del filelist
 
@@ -74,3 +74,89 @@ if __name__ == '__main__':
     path = path + 'kmon csv/'
     kmon.save_kmon_csv(path, info_file_num)
 
+
+
+
+
+    # time.sleep(1)
+    # info_file_num = 1
+    # path = 'D:/winston/workspace/Pycharm Projects/autotest/PL150_WS_eval/kmon csv'
+    #
+    #
+    # pag.hotkey('Alt', 'tab')
+    # pag.moveTo(1382, 116)
+    # pag.click(button='left')
+    # time.sleep(0.5)
+    # pag.move(88, 195)
+    # time.sleep(0.5)
+    # pag.move(164, 23)
+    # time.sleep(0.5)
+    # pag.click(button='right')
+    # time.sleep(5)
+    #
+    # pag.keyDown('alt')
+    # pag.press('tab', presses=2, interval=0.5)
+    # pag.keyUp('alt')
+    #
+    # time.sleep(1)
+    # pag.press('Alt')
+    # time.sleep(1)
+    # pag.press('f')
+    # time.sleep(1)
+    # pag.press('a')
+    # time.sleep(1)
+    # pag.press('o')
+    # time.sleep(1)
+    # pag.moveTo(1914, 37)
+    # pag.hotkey('Alt', 'd')
+    # pag.write(path)
+    # pag.press('enter')
+    # time.sleep(1)
+    # pag.hotkey('alt', 't')
+    # pag.press('down', presses=5, interval=0.5)
+    # pag.press('enter')
+    # time.sleep(1)
+    # pag.hotkey('Alt', 'n')
+    # pag.write('info_kmon_' + ('{0:02d}'.format(info_file_num)) + '_1.csv')
+    # pag.hotkey('alt', 's')
+    # time.sleep(5)
+    # pag.hotkey('alt', 'f4')
+    #
+    # time.sleep(1)
+    # pag.moveTo(1400, 590)
+    # pag.click(button='left')
+    # time.sleep(0.5)
+    # pag.move(88, 195)
+    # time.sleep(0.5)
+    # pag.move(164, 23)
+    # time.sleep(0.5)
+    # pag.click(button='right')
+    # time.sleep(5)
+    #
+    # pag.keyDown('alt')
+    # pag.press('tab', presses=2, interval=0.5)
+    # pag.keyUp('alt')
+    #
+    # time.sleep(1)
+    # pag.press('Alt')
+    # time.sleep(1)
+    # pag.press('f')
+    # time.sleep(1)
+    # pag.press('a')
+    # time.sleep(1)
+    # pag.press('o')
+    # time.sleep(1)
+    # pag.moveTo(1914, 37)
+    # pag.hotkey('Alt', 'd')
+    # pag.write(path)
+    # pag.press('enter')
+    # time.sleep(1)
+    # pag.hotkey('alt', 't')
+    # pag.press('down', presses=5, interval=0.5)
+    # pag.press('enter')
+    # time.sleep(1)
+    # pag.hotkey('Alt', 'n')
+    # pag.write('info_kmon_' + ('{0:02d}'.format(info_file_num)) + '_2.csv')
+    # pag.hotkey('alt', 's')
+    # time.sleep(5)
+    # pag.hotkey('alt', 'f4')

@@ -374,7 +374,6 @@ class KMON():
         pag.press('enter')
         time.sleep(1)
         pag.hotkey('Alt', 'n')
-        info_file_num = 10
         pag.write('info_kmon_' + ('{0:02d}'.format(info_file_num)) + '_1.csv')
         pag.hotkey('alt', 's')
         time.sleep(5)
@@ -406,7 +405,6 @@ class KMON():
         time.sleep(1)
         pag.moveTo(1914, 37)
         pag.hotkey('Alt', 'd')
-        path = 'D:/winston/workspace/Pycharm Projects/autotest/PL150_WS_eval/kmon csv'
         pag.write(path)
         pag.press('enter')
         time.sleep(1)
@@ -415,7 +413,6 @@ class KMON():
         pag.press('enter')
         time.sleep(1)
         pag.hotkey('Alt', 'n')
-        info_file_num = 10
         pag.write('info_kmon_' + ('{0:02d}'.format(info_file_num)) + '_2.csv')
         pag.hotkey('alt', 's')
         time.sleep(5)
