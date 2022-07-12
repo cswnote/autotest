@@ -25,10 +25,11 @@ if __name__ == '__main__':
         filelist = [int(file.split('info_test_')[1].split('.')[0]) for file in filelist if file[:10] == 'info_test_']
         filelist = max(filelist)
     except:
+
         filelist = -1
 
     test_file = 'test.xlsx'
-    test_sheet = 'manual mode ch4'
+    test_sheet = 'test_ch1_A'
     info_file_num = filelist + 1
     del filelist
 
