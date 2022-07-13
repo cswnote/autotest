@@ -254,8 +254,9 @@ class KMON():
         else:
             ratio = 2.5
             if self.scope_y_scale_ch4:
-                V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
-                I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
+                # V, I 0.1V, 0.1mA 간격으로 제어하다가 1 간격으로 바꾸면서 '* 10' 추가 됨
+                V = float(self.packets[self.dependency_ch4]) * self.scale_ch4 * 10
+                I = float(self.packets[self.dependency_ch3]) * self.scale_ch3 * 10
 
                 if V >= I * self.resistor:
                     if I * self.resistor != 0:
@@ -271,7 +272,7 @@ class KMON():
                 I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
                 if I >= V / self.resistor:
                     if V / self.resistor != 0:
-                        weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.00035)))) # amp01 500ohm
+                        weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.0005)))) # amp01 500ohm
                         div = V / self.resistor * ratio / 4 * weight
                     else:
                         div = V / self.resistor * ratio / 4
