@@ -253,31 +253,35 @@ class KMON():
 
         else:
             ratio = 2.5
+            ratio = 2
             if self.scope_y_scale_ch4:
                 V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
                 I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
 
                 if V >= I * self.resistor:
                     if I * self.resistor != 0:
-                        weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.23))))
-                        div = I * self.resistor * ratio / 4 * weight
+                        # weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 2))))
+                        # div = (I + 0.02) * self.resistor * math.sqrt(2) * ratio / 4 * weight
+                        div = (I + 0.02) * self.resistor * math.sqrt(2) / 4 * ratio
                     else:
-                        div = I * self.resistor * ratio / 4
+                        div = I * self.resistor * ratio / 4 * 2
                 else:
-                    div = V * ratio / 4
+                    div = V * (1 + 1 / math.exp(V * 0.5) / 0.4) * ratio / 5
                 self.scope.write('ch4:scale ' + str(div))
+
             if self.scope_y_scale_ch3:
                 V = float(self.packets[self.dependency_ch4]) * self.scale_ch4
                 I = float(self.packets[self.dependency_ch3]) * self.scale_ch3
                 if I >= V / self.resistor:
                     if V / self.resistor != 0:
+                        # weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.0005)))) # amp01 500ohm
                         weight = 1 / (1 - (1 / (1 * math.exp(I * self.resistor * 0.0005)))) # amp01 500ohm
-                        div = V / self.resistor * ratio / 4 * weight
+                        div = V / self.resistor * ratio / 5 * weight
                     else:
                         div = V / self.resistor * ratio / 4
-                    div = V / self.resistor * ratio / 4
                 else:
-                    div = I * ratio / 4
+                    # div = I * ratio / 4 * 4
+                    div = (I + 0.02) * math.sqrt(2) / 4 * ratio
                 self.scope.write('ch3:scale ' + str(div))
             if self.scope_y_scale_ch2:
                 var = float(self.packets[self.dependency_ch2]) * self.scale_ch2
